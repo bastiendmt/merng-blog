@@ -8,6 +8,7 @@
     "outDir": "./dist",
     "moduleResolution": "node",
     "removeComments": true,
+    "skipDefaultLibCheck": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
     "strictFunctionTypes": true,
