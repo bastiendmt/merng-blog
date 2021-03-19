@@ -18,7 +18,7 @@ function MyApp({ Component, pageProps }:any)  {
           options={{
             useSystemColorMode: true,
           }}
-        >j
+        >
         <Component {...pageProps} />
         </ColorModeProvider>
       </ChakraProvider>
