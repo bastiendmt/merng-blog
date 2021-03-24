@@ -11,8 +11,7 @@ import { useChangePasswordMutation } from '../../generated/graphql';
 import { createUrqlClient } from '../../utils/createUrqlClient';
 import { toErrorMap } from '../../utils/toErrorMap';
 
-const ChangePassword: NextPage<{ token: string }> = ({ token }) => {
-
+const ChangePassword: NextPage = ({ }) => {
     const router = useRouter();
     const [, changePassword] = useChangePasswordMutation()
     const [tokenError, setTokenError] = useState('')
@@ -21,7 +20,10 @@ const ChangePassword: NextPage<{ token: string }> = ({ token }) => {
             <Formik
                 initialValues={{ newPassword: '' }}
                 onSubmit={async (values, { setErrors }) => {
-                    const response = await changePassword({ newPassword: values.newPassword, token })
+                    const response = await changePassword({
+                        newPassword: values.newPassword,
+                        token: typeof router.query.token === 'string' ? router.query.token : ''
+                    })
 
                     if (response.data?.changePassword.errors) {
                         const errorMap = toErrorMap(response.data.changePassword.errors)
@@ -38,11 +40,11 @@ const ChangePassword: NextPage<{ token: string }> = ({ token }) => {
                 {({ isSubmitting }) => (
                     <Form>
                         <InputField name='newPassword' label='New Password' placeholder='new password' type='password' />
-                        {tokenError && 
-                        <Flex>
-                            <Box mr={2} color='red'>{tokenError}</Box>
-                            <NextLink href='/forgot-password'><Link>Get a new link</Link></NextLink>
-                        </Flex>
+                        {tokenError &&
+                            <Flex>
+                                <Box mr={2} color='red'>{tokenError}</Box>
+                                <NextLink href='/forgot-password'><Link>Get a new link</Link></NextLink>
+                            </Flex>
                         }
                         <Button type='submit' colorScheme='teal' mt={4} isLoading={isSubmitting}>Change password</Button>
                     </Form>
@@ -52,10 +54,5 @@ const ChangePassword: NextPage<{ token: string }> = ({ token }) => {
     );
 }
 
-ChangePassword.getInitialProps = ({ query }) => {
-    return {
-        token: query.token as string
-    }
-}
 //@ts-ignore
 export default withUrqlClient(createUrqlClient)(ChangePassword);
