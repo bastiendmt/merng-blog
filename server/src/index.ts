@@ -13,6 +13,7 @@ import { PostResolver } from "./resolvers/post";
 import { UserResolver } from "./resolvers/user";
 import { Post } from "./entities/Posts";
 import { User } from "./entities/User";
+import path from "path";
 
 const main = async () => {
   const conn = await createConnection({
@@ -22,8 +23,11 @@ const main = async () => {
     password: "root",
     logging: true,
     synchronize: true,
+    migrations: [path.join(__dirname, "./migrations/*")],
     entities: [Post, User],
   });
+
+  conn.runMigrations();
 
   const app = express();
 
