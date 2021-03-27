@@ -11,8 +11,9 @@ import { COOKIE_NAME } from "./constants";
 import { HelloResolver } from "./resolvers/hello";
 import { PostResolver } from "./resolvers/post";
 import { UserResolver } from "./resolvers/user";
-import { Post } from "./entities/Posts";
+import { Post } from "./entities/Post";
 import { User } from "./entities/User";
+import { Updoot } from "./entities/Updoot";
 import path from "path";
 
 const main = async () => {
@@ -24,7 +25,7 @@ const main = async () => {
     logging: true,
     synchronize: true,
     migrations: [path.join(__dirname, "./migrations/*")],
-    entities: [Post, User],
+    entities: [Post, User, Updoot],
   });
 
   conn.runMigrations();

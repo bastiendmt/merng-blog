@@ -1,4 +1,4 @@
-import { Post } from "../entities/Posts";
+import { Post } from "../entities/Post";
 import {
   Arg,
   Ctx,
@@ -13,9 +13,10 @@ import {
   Root,
   UseMiddleware,
 } from "type-graphql";
-import { MyContext } from "src/types";
+import { MyContext } from "../types";
 import { isAuth } from "../middleware/isAuth";
 import { getConnection } from "typeorm";
+import { Updoot } from "../entities/Updoot";
 
 @InputType()
 class PostInput {
@@ -42,6 +43,39 @@ export class PostResolver {
     return root.text.slice(0, 50);
   }
 
+  @Mutation(() => Boolean)
+  @UseMiddleware(isAuth)
+  async vote(
+    @Arg("postId", () => Int) postId: number,
+    @Arg("value", () => Int) value: number,
+    @Ctx() { req }: MyContext
+  ) {
+    const isUpoot = value !== -1;
+    const realValue = isUpoot ? 1 : -1;
+    // @ts-ignore
+    const { userId } = req.session;
+    // await Updoot.insert({
+    //   userId,
+    //   postId,
+    //   value: realValue,
+    // });
+    await getConnection().query(
+      `
+      START TRANSACTION;
+
+      insert into updoot ("userId", "postId", value)
+      values (${userId},${postId},${realValue});
+
+      update post
+      set points = points + ${realValue}
+      where id = ${postId};
+
+      COMMIT;
+    `
+    );
+    return true;
+  }
+
   @Query(() => PaginatedPosts)
   async posts(
     @Arg("limit", () => Int) limit: number,
@@ -50,13 +84,14 @@ export class PostResolver {
     const realLimit = Math.min(50, limit);
     const realLimitPlusOne = realLimit + 1;
 
-    const replacements: any[] = [realLimitPlusOne]
+    const replacements: any[] = [realLimitPlusOne];
 
-    if (cursor){
-      replacements.push(new Date(parseInt(cursor)))
+    if (cursor) {
+      replacements.push(new Date(parseInt(cursor)));
     }
 
-    const posts = await getConnection().query(`
+    const posts = await getConnection().query(
+      `
     select p.*, 
     json_build_object(
       'id', u.id,
@@ -65,10 +100,12 @@ export class PostResolver {
       ) creator 
     from post p
     inner join public.user u on u.id = p."creatorId"
-    ${cursor ? `where p."createdAt" < $2` : ''}
+    ${cursor ? `where p."createdAt" < $2` : ""}
     order by p."createdAt" DESC
     limit $1
-    `, replacements)
+    `,
+      replacements
+    );
 
     return {
       posts: posts.slice(0, realLimit),

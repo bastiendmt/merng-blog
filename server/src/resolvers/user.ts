@@ -46,7 +46,7 @@ export class UserResolver {
       return user.email;
     }
     // current user wants to see someone else email
-    return '';
+    return "";
   }
 
   @Mutation(() => UserResponse)
