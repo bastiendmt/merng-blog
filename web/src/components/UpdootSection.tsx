@@ -16,22 +16,26 @@ export const UpdootSection: React.FC<UpdootSectionProps> = ({ post }) => {
                 aria-label="Updoot post"
                 icon={<ChevronUpIcon />}
                 onClick={async () => {
+                    if (post.voteStatus === 1) return;
                     setLoadingState('updoot-loading')
                     await vote({ postId: post.id, value: 1 })
                     setLoadingState('not-loading')
                 }}
-                isLoading={loadingState==='updoot-loading'}
-                />
+                isLoading={loadingState === 'updoot-loading'}
+                colorScheme={post.voteStatus === 1 ? 'green' : 'light-grey'}
+            />
             {post.points}
             <IconButton
                 aria-label="Downdoot post"
                 icon={<ChevronDownIcon />}
                 onClick={async () => {
+                    if (post.voteStatus === -1) return;
                     setLoadingState('downdoot-loading')
                     await vote({ postId: post.id, value: -1 })
                     setLoadingState('not-loading')
                 }}
-                isLoading={loadingState==='downdoot-loading'}
+                isLoading={loadingState === 'downdoot-loading'}
+                colorScheme={post.voteStatus === -1 ? 'red' : undefined}
             />
         </Flex>
     );

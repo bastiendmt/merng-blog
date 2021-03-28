@@ -98,31 +98,27 @@ export class PostResolver {
         );
       });
     }
-    await getConnection().query(
-      `
-      START TRANSACTION;
-
-      
-
-      
-      COMMIT;
-    `
-    );
     return true;
   }
 
   @Query(() => PaginatedPosts)
   async posts(
     @Arg("limit", () => Int) limit: number,
-    @Arg("cursor", () => String, { nullable: true }) cursor: string | null //next posts from a specific one
+    @Arg("cursor", () => String, { nullable: true }) cursor: string | null, //next posts from a specific one
+    @Ctx() { req }: MyContext
   ): Promise<PaginatedPosts> {
     const realLimit = Math.min(50, limit);
     const realLimitPlusOne = realLimit + 1;
 
     const replacements: any[] = [realLimitPlusOne];
 
+    //@ts-ignore
+    if (req.session.userId) replacements.push(req.session.userId);
+
+    let curosorIdx = 3;
     if (cursor) {
       replacements.push(new Date(parseInt(cursor)));
+      curosorIdx = replacements.length
     }
 
     const posts = await getConnection().query(
@@ -132,10 +128,16 @@ export class PostResolver {
       'id', u.id,
       'username', u.username,
       'email', u.email
-      ) creator 
+      ) creator,
+      ${
+        // @ts-ignore
+        req.session.userId
+          ? '(select value from updoot where "userId" = $2 and "postId" = p.id) "voteStatus"'
+          : 'null as "voteStatus"'
+      }
     from post p
     inner join public.user u on u.id = p."creatorId"
-    ${cursor ? `where p."createdAt" < $2` : ""}
+    ${cursor ? `where p."createdAt" < $${curosorIdx}` : ""}
     order by p."createdAt" DESC
     limit $1
     `,
