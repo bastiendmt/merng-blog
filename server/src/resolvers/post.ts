@@ -118,7 +118,7 @@ export class PostResolver {
     let curosorIdx = 3;
     if (cursor) {
       replacements.push(new Date(parseInt(cursor)));
-      curosorIdx = replacements.length
+      curosorIdx = replacements.length;
     }
 
     const posts = await getConnection().query(
@@ -152,7 +152,7 @@ export class PostResolver {
 
   @Query(() => Post, { nullable: true })
   post(@Arg("id", () => Int) id: number): Promise<Post | undefined> {
-    return Post.findOne(id, {relations: ["creator"]});
+    return Post.findOne(id, { relations: ["creator"] });
   }
 
   @Mutation(() => Post)
@@ -186,8 +186,26 @@ export class PostResolver {
   }
 
   @Mutation(() => Boolean)
-  async deletePost(@Arg("id") id: number): Promise<boolean> {
-    await Post.delete(id);
+  @UseMiddleware(isAuth)
+  async deletePost(
+    @Arg("id", () => Int) id: number,
+    @Ctx() { req }: MyContext
+  ): Promise<boolean> {
+    //@ts-ignore
+    const userId = req.session.userId;
+    const post = await Post.findOne(id);
+    if (!post) {
+      return false;
+    }
+    if (post.creatorId !== userId) {
+      throw new Error("not authorized");
+    }
+
+    // not cascade way
+    // await Updoot.delete({ postId: id });
+    // await Post.delete({ id });
+
+    await Post.delete({ id, creatorId: userId });
     return true;
   }
 }
