@@ -141,8 +141,7 @@ export const createUrqlClient = (ssrExchange: any, ctx: any) => {
                   gql`
                     fragment __ on Post {
                       points
-                      voteStatu
-                      s
+                      voteStatus
                     }
                   `,
                   { id: postId, points: newPoints, voteStatus: value }
