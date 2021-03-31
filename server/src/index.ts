@@ -24,12 +24,12 @@ const main = async () => {
     type: "postgres",
     url: process.env.DATABASE_URL,
     logging: true,
-    synchronize: true,
+    // synchronize: !__prod__,
     migrations: [path.join(__dirname, "./migrations/*")],
     entities: [Post, User, Updoot],
   });
 
-  conn.runMigrations();
+  await conn.runMigrations();
 
   // await Post.delete({})
 
@@ -37,7 +37,7 @@ const main = async () => {
 
   const RedisStore = connectRedis(session);
   const redis = new Redis(process.env.REDIS_URL);
-
+  app.set("proxy", 1);
   app.use(
     cors({
       origin: process.env.CORS_ORIGIN,
@@ -56,7 +56,7 @@ const main = async () => {
         maxAge: 1000 * 60 * 60 * 24 * 365 * 10, //10 years
         httpOnly: true,
         sameSite: "lax", // csrf
-        secure : __prod__ // coockie only works in https
+        secure: __prod__, // coockie only works in https
       },
       saveUninitialized: false,
       secret: process.env.SESSION_SECRET,
