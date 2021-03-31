@@ -29,7 +29,7 @@ const main = async () => {
     entities: [Post, User, Updoot],
   });
 
-  await conn.runMigrations();
+  // await conn.runMigrations();
 
   // await Post.delete({})
 
@@ -37,7 +37,7 @@ const main = async () => {
 
   const RedisStore = connectRedis(session);
   const redis = new Redis(process.env.REDIS_URL);
-  app.set("proxy", 1);
+  app.set("trust proxy", 1);
   app.use(
     cors({
       origin: process.env.CORS_ORIGIN,
