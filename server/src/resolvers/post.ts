@@ -54,7 +54,6 @@ export class PostResolver {
     @Root() post: Post,
     @Ctx() { updootLoader, req }: MyContext
   ) {
-    //@ts-ignore
     const userId = req.session.userId;
     if (!userId) {
       return null;
@@ -169,7 +168,6 @@ export class PostResolver {
   ): Promise<Post> {
     return Post.create({
       ...input,
-      //@ts-ignore
       creatorId: req.session.userId,
     }).save();
   }
@@ -188,7 +186,6 @@ export class PostResolver {
       .set({ title, text })
       .where('id = :id and "creatorId" = :creatorId', {
         id,
-        //@ts-ignore
         creatorId: req.session.userId,
       })
       .returning("*")
@@ -203,7 +200,6 @@ export class PostResolver {
     @Arg("id", () => Int) id: number,
     @Ctx() { req }: MyContext
   ): Promise<boolean> {
-    //@ts-ignore
     const userId = req.session.userId;
     const post = await Post.findOne(id);
     if (!post) {

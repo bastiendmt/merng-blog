@@ -41,7 +41,6 @@ export class UserResolver {
   @FieldResolver()
   email(@Root() user: User, @Ctx() { req }: MyContext) {
     // this is the current user and its ok to show ther their own email for security purposes
-    //@ts-ignore
     if (req.session.userId === user.id) {
       return user.email;
     }
@@ -103,7 +102,6 @@ export class UserResolver {
     redis.del(key);
 
     //login user after change password
-    //@ts-ignore
     req.session.userId = user.id;
 
     return { user };
