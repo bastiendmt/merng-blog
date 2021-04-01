@@ -8,13 +8,14 @@ import { Layout } from '../../../components/Layout';
 import { useUpdatePostMutation } from '../../../generated/graphql';
 import { createUrqlClient } from '../../../utils/createUrqlClient';
 import { useGetPostFromUrl } from '../../../utils/useGetPostFromUrl';
+import { withApollo } from '../../../utils/withApollo';
 
 export const EditPost = ({ }) => {
     const router = useRouter();
-    const [{ data, fetching }] = useGetPostFromUrl();
-    const [, updatePost] = useUpdatePostMutation()
+    const { data, loading } = useGetPostFromUrl();
+    const [updatePost] = useUpdatePostMutation()
 
-    if (fetching) {
+    if (loading) {
         return <Layout><div>loading...</div></Layout>
     }
 
@@ -28,7 +29,7 @@ export const EditPost = ({ }) => {
             <Formik
                 initialValues={{ title: data.post.title, text: data.post.text }}
                 onSubmit={async (values, { setErrors }) => {
-                    await updatePost({ id: data!.post!.id, ...values })
+                    await updatePost({ variables: { id: data!.post!.id, ...values } })
                     router.back()
                 }}>
                 {({ isSubmitting }) => (
@@ -46,4 +47,4 @@ export const EditPost = ({ }) => {
     );
 }
 
-export default withUrqlClient(createUrqlClient)(EditPost)
+export default withApollo({ ssr: false })(EditPost);

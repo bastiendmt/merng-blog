@@ -8,10 +8,11 @@ import { Layout } from '../components/Layout';
 import { useCreatePostMutation } from '../generated/graphql';
 import { createUrqlClient } from '../utils/createUrqlClient';
 import { useIsAuth } from '../utils/useIsAuth';
+import { withApollo } from '../utils/withApollo';
 
 
 export const CreatePost: React.FC<{}> = ({ }) => {
-    const [, createPost] = useCreatePostMutation()
+    const [createPost] = useCreatePostMutation()
     const router = useRouter()
     useIsAuth()
 
@@ -21,9 +22,14 @@ export const CreatePost: React.FC<{}> = ({ }) => {
             <Formik
                 initialValues={{ title: '', text: '' }}
                 onSubmit={async (values, { setErrors }) => {
-                    const { error } = await createPost({ input: values })
+                    const { errors } = await createPost({
+                        variables: { input: values },
+                        update: (cache) => {
+                            cache.evict({ fieldName: 'posts:{}' })
+                        }
+                    })
 
-                    if (!error) {
+                    if (!errors) {
                         router.push("/");
                     }
                 }}>
@@ -42,4 +48,4 @@ export const CreatePost: React.FC<{}> = ({ }) => {
     );
 }
 
-export default withUrqlClient(createUrqlClient)(CreatePost)
+export default withApollo({ ssr: false })(CreatePost);
