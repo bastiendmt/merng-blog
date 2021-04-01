@@ -25,3 +25,6 @@ This is a fullstack project created by Ben awad teaching :
   - up/downvote
 - UI
   - pagination
+
+## Demo 
+![Demo ](./demo/demo.gif)
