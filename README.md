@@ -1,6 +1,7 @@
 # reddit-like
 This is a fullstack project created by Ben awad teaching : 
 - React
+- Next.js
 - TypeScript
 - GraphQL
 - URQL/Apollo
@@ -8,7 +9,6 @@ This is a fullstack project created by Ben awad teaching :
 - PostgreSQL
 - MikroORM/TypeORM
 - Redis
-- Next.js
 - TypeGraphQL
 - Chakra
 
