@@ -1,4 +1,7 @@
 # reddit-like
+## MERG Stack
+M(MongoDb) E(Express) R(React) G(GraphQL)
+
 This is a fullstack project created by Ben awad teaching : 
 - React
 - Next.js
