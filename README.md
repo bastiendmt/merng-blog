@@ -1,6 +1,6 @@
 # reddit-like
-## MERG Stack
-M(MongoDb) E(Express) R(React) G(GraphQL)
+## MERNG Stack
+M(MongoDb) E(Express) R(React) N(Node) G(GraphQL)
 
 This is a fullstack project created by Ben awad teaching : 
 - React
