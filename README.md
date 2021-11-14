@@ -1,4 +1,4 @@
-# reddit-like
+# MERNG Blog
 ## MERNG Stack
 M(MongoDb) E(Express) R(React) N(Node) G(GraphQL)
 
